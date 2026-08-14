@@ -1,0 +1,16 @@
+add_newline = false
+
+format = "$username$directory$character"
+
+[username]
+show_always = true
+format = "[$user]($style)"
+style_user = "bold blue"
+
+[directory]
+format = "[ $path]($style)"
+style = "bold purple"
+
+[character]
+success_symbol = " [>](bold green)"
+error_symbol = " [>](bold red)"

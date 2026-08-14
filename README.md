@@ -1,4 +1,5 @@
 # dotfiles
+- configuracion personal para entorno hyprland, proyectos varios y miscelaneos
 ## instalacion
 - para el entorno hyprland `./install.sh`
 - para otros proyectos `./utils/install.sh`
