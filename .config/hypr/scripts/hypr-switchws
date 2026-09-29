@@ -1,0 +1,12 @@
+#!/bin/bash
+# Switch workspace, bounded 1..5.
+# Usage: hypr-switchws <-1|+1>
+
+direction="$1"
+current_workspace=$(hyprctl activeworkspace -j | jq '.id')
+
+if [ "$direction" = "-1" ] && [ "$current_workspace" -gt 1 ]; then
+    hyprctl dispatch workspace -1
+elif [ "$direction" = "+1" ] && [ "$current_workspace" -lt 5 ]; then
+    hyprctl dispatch workspace +1
+fi

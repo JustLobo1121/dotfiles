@@ -1,0 +1,43 @@
+#!/bin/bash
+# Screenshot tool: area (with freeze), window, fullscreen, or OCR.
+# Usage: hypr-screenshot <area|window|full|ocr>
+
+mode="$1"
+screenshots_dir="$HOME/Pictures/Screenshots"
+mkdir -p "$screenshots_dir"
+output_file="$screenshots_dir/$(date +%Y%m%d_%H%M%S).png"
+
+case "$mode" in
+    area)
+        hyprpicker -rzd &
+        picker_pid=$!
+        sleep 0.2
+        region=$(slurp)
+        if [ -n "$region" ]; then
+            grim -g "$region" - | tee "$output_file" | wl-copy
+        fi
+        kill $picker_pid 2>/dev/null
+        ;;
+    window)
+        grimblast copysave active "$output_file"
+        ;;
+    full)
+        grimblast copysave output "$output_file"
+        ;;
+    ocr)
+        hyprpicker -rzd &
+        picker_pid=$!
+        sleep 0.2
+        region=$(slurp)
+        kill $picker_pid 2>/dev/null
+        if [ -n "$region" ]; then
+            text=$(grim -g "$region" - | tesseract - - -l eng+spa 2>/dev/null)
+            if [ -n "$text" ]; then
+                printf '%s' "$text" | wl-copy
+                notify-send "OCR" "$(printf '%s' "$text" | head -c 200)"
+            else
+                notify-send "OCR" "No text recognized"
+            fi
+        fi
+        ;;
+esac

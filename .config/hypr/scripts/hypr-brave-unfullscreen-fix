@@ -1,0 +1,22 @@
+#!/usr/bin/env python3
+# When Brave exits HTML5 fullscreen, Hyprland leaves it in maximize mode
+# instead of returning to tiling. Watch the event socket and force it back
+# to untiled whenever a brave-browser window reports fullscreen>>0 but
+# still has a fullscreen state.
+
+import json
+import os
+import socket
+import subprocess
+
+event_socket_path = f"{os.environ['XDG_RUNTIME_DIR']}/hypr/{os.environ['HYPRLAND_INSTANCE_SIGNATURE']}/.socket2.sock"
+
+event_socket = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
+event_socket.connect(event_socket_path)
+
+for event_line in event_socket.makefile("r"):
+    if not event_line.startswith("fullscreen>>0"):
+        continue
+    active_window = json.loads(subprocess.check_output(["hyprctl", "-j", "activewindow"]))
+    if active_window.get("class") == "brave-browser" and (active_window.get("fullscreen") or active_window.get("fullscreenClient")):
+        subprocess.run(["hyprctl", "dispatch", "fullscreenstate", "0", "0"], check=False)

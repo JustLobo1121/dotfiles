@@ -1,0 +1,61 @@
+#!/bin/bash
+# Focus the geometric neighbor tiled window.
+# At a horizontal edge, switch workspace (bounded 1..5).
+# Vertical edges are hard stops.
+# Usage: hypr-smartfocus <l|r|u|d>
+
+direction="$1"
+current_workspace=$(hyprctl activeworkspace -j | jq '.id')
+
+switch_workspace_at_edge() {
+    case "$direction" in
+        l) [ "$current_workspace" -gt 1 ] && hyprctl dispatch workspace -1 ;;
+        r) [ "$current_workspace" -lt 5 ] && hyprctl dispatch workspace +1 ;;
+    esac
+}
+
+find_neighbor() {
+    local axis sign
+    case "$direction" in
+        l) axis=0; sign=-1 ;;
+        r) axis=0; sign=1 ;;
+        u) axis=1; sign=-1 ;;
+        d) axis=1; sign=1 ;;
+    esac
+    echo "$tiled_clients" | jq -r \
+        --argjson x "$active_x" --argjson y "$active_y" \
+        --argjson w "$active_width" --argjson h "$active_height" \
+        --argjson axis "$axis" --argjson sign "$sign" '
+        ([$x, $y])     as $origin |
+        ([$w, $h])     as $size   |
+        (1 - $axis)    as $perp   |
+        ($origin[$axis] + $size[$axis] / 2) as $midpoint |
+        [.[] | select(
+            (if $sign == 1
+                then .at[$axis] > $midpoint
+                else (.at[$axis] + .size[$axis]) < $midpoint
+             end)
+            and .at[$perp] < ($origin[$perp] + $size[$perp])
+            and (.at[$perp] + .size[$perp]) > $origin[$perp]
+        )] | sort_by($sign * .at[$axis]) | .[0] // empty | .address'
+}
+
+# Extract active window info.
+active_window=$(hyprctl activewindow -j)
+read -r active_x active_y active_width active_height active_floating active_workspace < <(
+    echo "$active_window" | jq -r '"\(.at[0]) \(.at[1]) \(.size[0]) \(.size[1]) \(.floating) \(.workspace.id)"' 2>/dev/null
+)
+tiled_clients=$(hyprctl clients -j | jq -r "[.[] | select(.workspace.id == $current_workspace and .floating == false)]")
+
+# Only look for a neighbor if the active window is itself a tiled window
+# on the current workspace; otherwise fall through to the edge behavior.
+neighbor_address=
+if [ "$active_workspace" = "$current_workspace" ] && [ "$active_floating" = "false" ]; then
+    neighbor_address=$(find_neighbor)
+fi
+
+if [ -n "$neighbor_address" ]; then
+    hyprctl dispatch focuswindow "address:$neighbor_address"
+else
+    switch_workspace_at_edge
+fi

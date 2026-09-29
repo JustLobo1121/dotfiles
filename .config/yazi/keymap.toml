@@ -1,0 +1,39 @@
+[[mgr.prepend_keymap]]
+on   = "W"
+run  = '''shell -- bash -c '
+    IMAGE="$(realpath "%h")"
+    cp "$IMAGE" ~/.config/background
+    swww img "$IMAGE" --transition-type fade --transition-duration 1
+    notify-send "Wallpaper changed" "$(basename "$IMAGE")"
+' '''
+desc = "Set image as wallpaper"
+
+[[mgr.prepend_keymap]]
+on   = "f"
+run  = "plugin jump-to-char"
+desc = "Jump to char"
+
+[[mgr.prepend_keymap]]
+on   = "F"
+run  = "plugin smart-filter"
+desc = "Smart filter"
+
+[[mgr.prepend_keymap]]
+on   = ["c", "m"]
+run  = "plugin chmod"
+desc = "Chmod"
+
+[[mgr.prepend_keymap]]
+on   = ["M", "p"]
+run  = ['shell "rmount phone" --block', 'cd /mnt/phone']
+desc = "Mount + open phone (FTP)"
+
+[[mgr.prepend_keymap]]
+on   = ["M", "b"]
+run  = ['shell "rmount bioceanor" --block', 'cd /mnt/bioceanor']
+desc = "Mount + open bioceanor (SFTP)"
+
+[[mgr.prepend_keymap]]
+on   = ["M", "u"]
+run  = 'shell "rmount -u phone; rmount -u bioceanor" --block'
+desc = "Unmount all rclone remotes"
