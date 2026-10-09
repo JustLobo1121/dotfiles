@@ -37,3 +37,7 @@
 - tailscale
 - steam
 - qbittorrent
+
+## configuracion basadas/copiadas
+- [hyprlock](https://github.com/mahaveergurjar/Hyprlock-Dots)
+- [hyprland](https://github.com/Awerito/dotfiles)

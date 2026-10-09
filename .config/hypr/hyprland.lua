@@ -18,10 +18,24 @@ hl.env("LC_TIME", "es_CL.UTF-8")
 local terminal = "kitty"
 local menu = "rofi -show drun"
 local filemanager = "dolphin"
+local browser = "firefox"
 
 --- startup programs
 hl.on("hyprland.start", function ()
-	hl.exec_cmd("hyprlock --grace 0 & awww-daemon & hypridle & hyprpanel & wl-clip-persist --clipboard both & wl-paste --watch cliphist store & systemctl --user start hyprpolkitagent & dbus-update-activation-environment --systemd WAYLAND_DISPLAY XDG_CURRENT_DESKTOP & gnome-keyring-daemon --start --components=secrets,pkcs11 & ~/.config/hypr/scripts/hypr-brave-unfullscreen-fix & hyprswitch init & ~/.config/hypr/scripts/pip-window-escape & udiskie & ~/.scripts.local/hypr-extras")
+	hl.exec_cmd("hyprlock --grace 0")
+	hl.exec_cmd("awww-daemon")
+	hl.exec_cmd("hypridle")
+	hl.exec_cmd("hyprpanel")
+	hl.exec_cmd("wl-clip-persist --clipboard both")
+	hl.exec_cmd("wl-paste --watch cliphist store")
+	hl.exec_cmd("systemctl --user start hyprpolkitagent ")
+	hl.exec_cmd("dbus-update-activation-environment --systemd WAYLAND_DISPLAY XDG_CURRENT_DESKTOP")
+	hl.exec_cmd("gnome-keyring-daemon --start --components=secrets,pkcs11")
+	-- hl.exec_cmd("~/.config/hypr/scripts/hypr-brave-unfullscreen-fix")
+	hl.exec_cmd("hyprswitch init ")
+	hl.exec_cmd("~/.config/hypr/scripts/pip-window-escape")
+	hl.exec_cmd("udiskie")
+	hl.exec_cmd("~/.scripts.local/hypr-extras")
 end)
 
 --- layout
@@ -206,10 +220,11 @@ hl.bind(mainMod .. " + Return", hl.dsp.exec_cmd("~/.config/hypr/scripts/hypr-cha
 hl.bind(mainMod .. " + C", hl.dsp.exec_cmd(terminal))
 hl.bind(mainMod .. " + R", hl.dsp.exec_cmd(menu))
 local closeWindowBind = hl.bind(mainMod .. " + Q", hl.dsp.window.close())
-hl.bind(mainMod .. " + S", hl.dsp.exec_cmd("~/.config/hypr/scripts/pipspotify"))
-hl.bind(mainMod .. " + B", hl.dsp.exec_cmd("firefox"))
+hl.bind(mainMod .. " + P", hl.dsp.exec_cmd("~/.config/hypr/scripts/pipspotify"))
+hl.bind(mainMod .. " + B", hl.dsp.exec_cmd(browser))
 hl.bind(mainMod .. " + F", hl.dsp.window.fullscreen({ action = "toggle" }))
 hl.bind(mainMod .. " + M", hl.dsp.window.fullscreen({ mode = "maximized" }))
+hl.bind(mainMod .. " + L", hl.dsp.exec_cmd("/home/lobo1121/.config/hyprlock/scripts/hyprlock.sh"))
 hl.bind(mainMod .. " + T", hl.dsp.exec_cmd("~/.config/hypr/scripts/hypr-3columns"))
 hl.bind(mainMod .. " + BackSpace", hl.dsp.exec_cmd("~/.config/hypr/scripts/pipterm"))
 hl.bind(mainMod .. " + E", hl.dsp.exec_cmd("rofimoji --selector rofi --action type"))
@@ -237,12 +252,6 @@ hl.bind("XF86AudioMute", hl.dsp.exec_cmd("wpctl set-mute @DEFAULT_AUDIO_SINK@ to
 hl.bind(mainMod .. " + Left", hl.dsp.exec_cmd("playerctl -p spotify previous"))
 hl.bind(mainMod .. " + Down", hl.dsp.exec_cmd("playerctl -p spotify play-pause"))
 hl.bind(mainMod .. " + Right", hl.dsp.exec_cmd("playerctl -p spotify next"))
-
--- Foco entre ventanas (mismo espacio de trabajo)
-hl.bind(mainMod .. " + h", hl.dsp.exec_cmd("~/.config/hypr/scripts/hypr-smartfocus l"))
-hl.bind(mainMod .. " + j", hl.dsp.exec_cmd("~/.config/hypr/scripts/hypr-smartfocus d"))
-hl.bind(mainMod .. " + k", hl.dsp.exec_cmd("~/.config/hypr/scripts/hypr-smartfocus u"))
-hl.bind(mainMod .. " + l", hl.dsp.exec_cmd("~/.config/hypr/scripts/hypr-smartfocus r"))
 
 -- Cambiar escritorio (horizontal)
 hl.bind(mainMod .. " + CTRL + h", hl.dsp.exec_cmd("~/.config/hypr/scripts/hypr-switchws -1"))
@@ -299,3 +308,5 @@ hl.bind(mainMod .. " + ALT + SHIFT + l", hl.dsp.exec_cmd("~/.config/hypr/scripts
 -- Redimensionar con el ratón
 -- hl.bind(mainMod .. " + mouse:272", hl.dsp.movewindow())
 -- hl.bind(mainMod .. " + mouse:273", hl.dsp.resizewindow())
+hl.bind(mainMod .. " + mouse:272", hl.dsp.window.drag(),   { mouse = true })
+hl.bind(mainMod .. " + mouse:273", hl.dsp.window.resize(), { mouse = true })
